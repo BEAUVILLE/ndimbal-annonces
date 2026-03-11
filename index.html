@@ -22,6 +22,40 @@
       background:radial-gradient(900px 500px at 10% -10%, rgba(34,197,94,.20), transparent 60%), var(--bg);
       color:var(--text);
     }
+
+    .site-back-float{
+      position:fixed;
+      top:calc(env(safe-area-inset-top, 0px) + 12px);
+      left:calc(env(safe-area-inset-left, 0px) + 12px);
+      z-index:9999;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      min-height:46px;
+      padding:11px 15px;
+      border-radius:999px;
+      text-decoration:none;
+      font-size:14px;
+      font-weight:950;
+      color:var(--text);
+      background:rgba(11,42,31,.82);
+      border:1px solid rgba(255,255,255,.18);
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+      box-shadow:0 14px 30px rgba(0,0,0,.28);
+      transition:transform .18s ease, background .18s ease, border-color .18s ease;
+      touch-action:manipulation;
+    }
+    .site-back-float:hover{
+      transform:translateY(-1px);
+      background:rgba(22,163,74,.18);
+      border-color:rgba(34,197,94,.38);
+    }
+    .site-back-float:active{
+      transform:scale(.97);
+    }
+
     header{
       padding:18px 16px 14px; 
       text-align:center; 
@@ -326,6 +360,7 @@
     .preview-value{
       font-weight:900;
       font-size:14px;
+      white-space:pre-wrap;
     }
     .modal-actions{
       display:flex;
@@ -371,10 +406,22 @@
       .zone-quick-btns{
         grid-template-columns:repeat(2, 1fr);
       }
+      header{
+        padding-top:72px;
+      }
+      .site-back-float{
+        top:calc(env(safe-area-inset-top, 0px) + 10px);
+        left:calc(env(safe-area-inset-left, 0px) + 10px);
+        min-height:42px;
+        padding:10px 13px;
+        font-size:13px;
+      }
     }
   </style>
 </head>
 <body>
+
+<a class="site-back-float" href="https://digiylyfe.com/" target="_blank" rel="noopener">← Retour au site</a>
 
 <header>
   <div class="brand">♾️ DIGIY NDIMBAL</div>
@@ -388,7 +435,6 @@
     ✨ <strong>0% commission</strong> — tu gardes 100% de ce que tu gagnes.
   </div>
 
-  <!-- Progress -->
   <div class="progress-container">
     <div class="progress-bar">
       <div class="progress-fill" id="progressFill"></div>
@@ -415,10 +461,10 @@
       oninput="updateProgress()"
     />
     <div class="zone-quick-btns">
-      <button class="zone-btn" onclick="selectZone('Saly')">📍 Saly</button>
-      <button class="zone-btn" onclick="selectZone('Dakar')">📍 Dakar</button>
-      <button class="zone-btn" onclick="selectZone('Mbour')">📍 Mbour</button>
-      <button class="zone-btn" onclick="selectZone('Thiès')">📍 Thiès</button>
+      <button type="button" class="zone-btn" onclick="selectZone('Saly')">📍 Saly</button>
+      <button type="button" class="zone-btn" onclick="selectZone('Dakar')">📍 Dakar</button>
+      <button type="button" class="zone-btn" onclick="selectZone('Mbour')">📍 Mbour</button>
+      <button type="button" class="zone-btn" onclick="selectZone('Thiès')">📍 Thiès</button>
     </div>
 
     <label>Téléphone WhatsApp <span class="required">*</span></label>
@@ -428,7 +474,7 @@
       placeholder="+221 77 123 45 67"
       oninput="updateProgress()"
     />
-    <button class="btn ghost" onclick="formatPhone()" style="margin-top:8px;padding:10px">
+    <button type="button" class="btn ghost" onclick="formatPhone()" style="margin-top:8px;padding:10px">
       📱 Auto-formater numéro
     </button>
 
@@ -439,10 +485,10 @@
       oninput="updateProgress()"
     />
     <div class="time-quick-btns">
-      <button class="time-btn" onclick="selectTime('Maintenant')">⚡ Maintenant</button>
-      <button class="time-btn" onclick="selectTime('Aujourd\'hui')">📅 Aujourd'hui</button>
-      <button class="time-btn" onclick="selectTime('Ce soir')">🌙 Ce soir</button>
-      <button class="time-btn" onclick="selectTime('Demain')">☀️ Demain</button>
+      <button type="button" class="time-btn" onclick="selectTime('Maintenant')">⚡ Maintenant</button>
+      <button type="button" class="time-btn" onclick="selectTime('Aujourd\'hui')">📅 Aujourd'hui</button>
+      <button type="button" class="time-btn" onclick="selectTime('Ce soir')">🌙 Ce soir</button>
+      <button type="button" class="time-btn" onclick="selectTime('Demain')">☀️ Demain</button>
     </div>
 
     <label>Détails supplémentaires</label>
@@ -460,7 +506,7 @@
     <div class="success-msg" id="successMsg"></div>
     <div class="error-msg" id="errorMsg"></div>
 
-    <button class="btn" id="btnSubmit" onclick="preview()">
+    <button type="button" class="btn" id="btnSubmit" onclick="preview()">
       👁️ Prévisualiser la mission
     </button>
 
@@ -469,20 +515,19 @@
       💾 Ton formulaire est sauvegardé automatiquement
     </div>
 
-    <button class="btn ghost" onclick="goBack()">
+    <button type="button" class="btn ghost" onclick="goBack()">
       ← Retour
     </button>
   </div>
 </main>
 
-<!-- Preview Modal -->
 <div class="modal-overlay" id="previewModal">
   <div class="modal">
     <div class="modal-header">👁️ Aperçu de ta mission</div>
     <div class="modal-body" id="previewContent"></div>
     <div class="modal-actions">
-      <button class="modal-cancel" onclick="closePreview()">✏️ Modifier</button>
-      <button class="modal-confirm" onclick="submitMission()">📤 Publier</button>
+      <button type="button" class="modal-cancel" onclick="closePreview()">✏️ Modifier</button>
+      <button type="button" class="modal-confirm" onclick="submitMission()">📤 Publier</button>
     </div>
   </div>
 </div>
@@ -563,15 +608,14 @@ function formatPhone(){
   const input = document.getElementById("phone");
   let phone = input.value.replace(/\D/g, "");
   
-  // Remove prefixes
-  if(phone.startsWith("221")) phone = phone.substring(3);
   if(phone.startsWith("00221")) phone = phone.substring(5);
+  if(phone.startsWith("221")) phone = phone.substring(3);
   
-  // Validate Senegal format
   if(phone.length === 9 && phone.startsWith("7")){
     input.value = "+221" + phone;
     input.classList.remove("error");
     updateProgress();
+    hideMessages();
   } else {
     showError("⚠️ Format invalide. Numéro sénégalais attendu (ex: 771234567)");
     input.classList.add("error");
@@ -579,9 +623,8 @@ function formatPhone(){
 }
 
 function validatePhone(phone){
-  const clean = phone.replace(/\D/g, "");
-  const pattern = /^(\+221|00221)?(7[05678])\d{7}$/;
-  return pattern.test(phone.replace(/\s/g, ""));
+  const normalized = phone.replace(/\s/g, "");
+  return /^(\+221|00221)?(7[05678])\d{7}$/.test(normalized);
 }
 
 /* ======================================================
@@ -604,7 +647,7 @@ function loadDraft(){
   if(!draftStr) return false;
   
   const draft = JSON.parse(draftStr);
-  if(!draft.title && !draft.zone) return false;
+  if(!draft.title && !draft.zone && !draft.phone && !draft.when_time && !draft.details) return false;
   
   if(confirm("📝 Reprendre le brouillon sauvegardé ?")){
     document.getElementById("title").value = draft.title || "";
@@ -658,7 +701,6 @@ function preview(){
   const when_time = document.getElementById("when_time").value.trim();
   const details = document.getElementById("details").value.trim();
   
-  // Validation
   if(title.length < 6){
     showError("⚠️ Le titre doit faire au moins 6 caractères.");
     document.getElementById("title").focus();
@@ -675,18 +717,19 @@ function preview(){
     return;
   }
   if(!validatePhone(phone)){
-    showError("⚠️ Format téléphone invalide. Utilise +221XXXXXXXXX ou clique sur 'Auto-formater'.");
+    showError("⚠️ Format téléphone invalide. Utilise +221XXXXXXXXX ou clique sur “Auto-formater”.");
     document.getElementById("phone").classList.add("error");
     document.getElementById("phone").focus();
     return;
   }
+  document.getElementById("phone").classList.remove("error");
+
   if(!when_time){
     showError("⚠️ Précise quand tu as besoin de cette mission.");
     document.getElementById("when_time").focus();
     return;
   }
   
-  // Generate preview
   const previewHTML = `
     <div class="preview-field">
       <div class="preview-label">📋 Titre</div>
@@ -754,13 +797,9 @@ async function submitMission(){
       return;
     }
     
-    // Clear draft
     clearDraft();
-    
-    // Success
     showSuccess("✅ Mission publiée avec succès ! Elle sera validée dans les 24-48h.");
     
-    // Redirect after 2s
     setTimeout(() => {
       location.href = "digiy-jef.html";
     }, 2000);
@@ -788,6 +827,8 @@ function goBack(){
 window.addEventListener("load", () => {
   loadDraft();
   updateProgress();
+  updateCharCount("title", 100);
+  updateCharCount("details", 500);
 });
 </script>
 

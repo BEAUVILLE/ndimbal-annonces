@@ -471,6 +471,67 @@
         display:none;
       }
     }
+
+    /* DIGIY AUDIO — bouton vert visible */
+    .digiy-audio-ndimbal{
+      position:fixed;
+      left:18px;
+      bottom:calc(18px + env(safe-area-inset-bottom,0px));
+      z-index:999999;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      min-height:54px;
+      padding:15px 20px;
+      border-radius:999px;
+      border:1px solid rgba(34,197,94,.50);
+      background:linear-gradient(135deg,#16a34a,#34d399);
+      color:#04150d;
+      font-weight:1000;
+      font-size:14px;
+      box-shadow:0 16px 40px rgba(34,197,94,.32),0 0 0 3px rgba(34,197,94,.10);
+      cursor:pointer;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+      touch-action:manipulation;
+    }
+
+    .digiy-audio-ndimbal.stop{
+      background:rgba(239,68,68,.14);
+      color:#fecaca;
+      border-color:rgba(248,113,113,.38);
+      box-shadow:0 14px 32px rgba(0,0,0,.24);
+    }
+
+    .digiy-audio-progress-wrap{
+      position:fixed;
+      left:0;
+      right:0;
+      bottom:0;
+      z-index:999998;
+      height:4px;
+      opacity:0;
+      background:rgba(34,197,94,.14);
+      pointer-events:none;
+      transition:opacity .18s ease;
+    }
+
+    .digiy-audio-progress{
+      width:0%;
+      height:100%;
+      background:linear-gradient(90deg,#22c55e,#facc15);
+      transition:width .18s linear;
+    }
+
+    @media(max-width:600px){
+      .digiy-audio-ndimbal{
+        left:12px;
+        right:12px;
+        bottom:calc(18px + env(safe-area-inset-bottom,0px));
+        width:calc(100% - 24px);
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -480,7 +541,7 @@
     <a class="digiy-route-btn main" href="https://digiylyfe.com/" rel="noopener">🌍 <span>Site</span></a>
   </div>
   <div class="digiy-route-group">
-    <a class="digiy-route-btn" href="https://digiy-hub.digiylyfe.com/" rel="noopener">🧭 <span>HUB</span></a>
+    <a class="digiy-route-btn" href="https://pro-espace.digiylyfe.com/" rel="noopener">🧭 <span>HUB</span></a>
     <a class="digiy-route-btn" href="https://tarifs.digiylyfe.com/" rel="noopener">📦 <span>Tarifs</span></a>
   </div>
 </nav>
@@ -490,7 +551,7 @@
   <div class="subtitle">Missions courtes • 0% commission • Contact direct</div>
   <div class="header-links" aria-label="Liens rapides DIGIYLYFE">
     <a href="https://digiylyfe.com/" rel="noopener">🌍 Site</a>
-    <a href="https://digiy-hub.digiylyfe.com/" rel="noopener">🧭 HUB</a>
+    <a href="https://pro-espace.digiylyfe.com/" rel="noopener">🧭 HUB</a>
     <a href="https://tarifs.digiylyfe.com/" rel="noopener">📦 Tarifs</a>
   </div>
 </header>
@@ -599,9 +660,17 @@
   </div>
 </div>
 
+
+<button class="digiy-audio-ndimbal" id="digiyAudioNdimbal" type="button" aria-label="Écouter l’aide NDIMBAL">
+  🎧 Écouter avant de publier
+</button>
+<div class="digiy-audio-progress-wrap" id="digiyAudioProgressWrap" aria-hidden="true">
+  <div class="digiy-audio-progress" id="digiyAudioProgress"></div>
+</div>
+
 <footer>
   DIGIYLYFE ♾️ — direct au peuple • 0% commission •
-  <a href="https://digiy-hub.digiylyfe.com/" rel="noopener">HUB</a> • <a href="https://tarifs.digiylyfe.com/" rel="noopener">Tarifs</a>
+  <a href="https://pro-espace.digiylyfe.com/" rel="noopener">HUB</a> • <a href="https://tarifs.digiylyfe.com/" rel="noopener">Tarifs</a>
 </footer>
 
 <script>
@@ -897,6 +966,124 @@ window.addEventListener("load", () => {
   updateCharCount("title", 100);
   updateCharCount("details", 500);
 });
+</script>
+
+
+<script>
+/* ======================================================
+   DIGIY AUDIO — NDIMBAL MISSION COURTE
+====================================================== */
+(function(){
+  "use strict";
+
+  const AUDIO_TEXT =
+    "Bienvenue dans DIGIY NDIMBAL. Cette page sert à publier une mission courte, une aide ponctuelle ou un besoin urgent. " +
+    "Si tu découvres l’outil, avance simplement. D’abord, donne un titre clair : par exemple livraison urgente, aide ménage, manutention, course, réparation ou coup de main. " +
+    "Ensuite, indique la zone : Saly, Dakar, Mbour, Thiès ou un autre lieu précis. " +
+    "Ajoute ton téléphone WhatsApp pour que la personne puisse te contacter directement. " +
+    "Précise quand la mission doit se faire : maintenant, aujourd’hui, ce soir, demain, ou une heure précise. " +
+    "Dans les détails, explique ce qu’il faut faire, la durée, le matériel nécessaire, et si une rémunération est proposée. " +
+    "Avant de publier, DIGIY te montre un aperçu. Tu vérifies, tu corriges si besoin, puis tu publies. " +
+    "DIGIY ne prend pas de commission. Les conditions et le paiement se discutent directement entre les personnes. " +
+    "Le but est simple : publier vite, rester clair, et aider le terrain sans créer de confusion.";
+
+  const btn = document.getElementById("digiyAudioNdimbal");
+  const wrap = document.getElementById("digiyAudioProgressWrap");
+  const bar = document.getElementById("digiyAudioProgress");
+
+  if(!btn || !wrap || !bar) return;
+
+  if(!("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)){
+    btn.style.display = "none";
+    return;
+  }
+
+  let playing = false;
+  let timer = null;
+  let startedAt = 0;
+  const duration = 100000;
+
+  function pickFrenchVoice(){
+    try{
+      const voices = window.speechSynthesis.getVoices() || [];
+      return voices.find(v => /fr[-_]?FR/i.test(v.lang || "") && /google/i.test(v.name || "")) ||
+             voices.find(v => /fr[-_]?FR/i.test(v.lang || "")) ||
+             voices.find(v => /^fr/i.test(v.lang || "")) ||
+             null;
+    }catch(_){
+      return null;
+    }
+  }
+
+  function setProgress(value){
+    bar.style.width = Math.max(0, Math.min(100, value)) + "%";
+  }
+
+  function startProgress(){
+    clearInterval(timer);
+    startedAt = Date.now();
+    wrap.style.opacity = "1";
+    setProgress(0);
+    timer = setInterval(() => {
+      setProgress(((Date.now() - startedAt) / duration) * 100);
+    }, 180);
+  }
+
+  function stopAudio(){
+    try{ window.speechSynthesis.cancel(); }catch(_){}
+    clearInterval(timer);
+    timer = null;
+    playing = false;
+    btn.classList.remove("stop");
+    btn.textContent = "🎧 Écouter avant de publier";
+    wrap.style.opacity = "0";
+    setProgress(0);
+  }
+
+  function playAudio(){
+    if(playing){
+      stopAudio();
+      return;
+    }
+
+    stopAudio();
+
+    const utter = new SpeechSynthesisUtterance(AUDIO_TEXT);
+    utter.lang = "fr-FR";
+    utter.rate = 0.84;
+    utter.pitch = 1.02;
+    utter.volume = 1;
+
+    const voice = pickFrenchVoice();
+    if(voice) utter.voice = voice;
+
+    utter.onstart = () => {
+      playing = true;
+      btn.classList.add("stop");
+      btn.textContent = "⏹ Arrêter l’écoute";
+      startProgress();
+    };
+
+    utter.onend = () => {
+      setProgress(100);
+      setTimeout(stopAudio, 450);
+    };
+
+    utter.onerror = stopAudio;
+
+    window.speechSynthesis.speak(utter);
+  }
+
+  btn.addEventListener("click", playAudio);
+  window.addEventListener("beforeunload", stopAudio);
+  document.addEventListener("visibilitychange", () => {
+    if(document.hidden) stopAudio();
+  });
+
+  if(typeof window.speechSynthesis.onvoiceschanged !== "undefined"){
+    window.speechSynthesis.onvoiceschanged = pickFrenchVoice;
+  }
+})();
 </script>
 
 </body>
